@@ -409,13 +409,18 @@
     to { opacity: 0; transform: translate(-50%, -20px); }
   }
 
-  /* Hide main container by default */
+  /* Hide main container by default, show when not hidden */
   #main-container {
     display: none;
   }
 
   #main-container:not(.hidden) {
     display: block;
+  }
+
+  /* Override the default hidden styles for main container */
+  .container:not(.hidden) {
+    display: block !important;
   }
 
   @media (max-width: 500px) {
