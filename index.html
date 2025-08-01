@@ -404,6 +404,24 @@
     color: #0072ff;
   }
 
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translate(-50%, 0); }
+    to { opacity: 0; transform: translate(-50%, -20px); }
+  }
+
+  /* Hide main container by default */
+  #main-container {
+    display: none;
+  }
+
+  #main-container:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
   @media (max-width: 500px) {
     .title {
       font-size: 1.6rem;
