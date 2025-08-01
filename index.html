@@ -476,6 +476,155 @@
   </div>
 
   <script>
+    // Login System
+    const LOGIN_CREDENTIALS = {
+      admin: 'password123'
+    };
+
+    // Check login status on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      checkLoginStatus();
+    });
+
+    function checkLoginStatus() {
+      const isLoggedIn = localStorage.getItem('tikTokDownloader_loggedIn');
+      const loginOverlay = document.getElementById('login-overlay');
+      const mainContainer = document.getElementById('main-container');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      if (isLoggedIn === 'true') {
+        loginOverlay.classList.add('hidden');
+        mainContainer.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        showWelcomeMessage();
+      } else {
+        loginOverlay.classList.remove('hidden');
+        mainContainer.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
+      }
+    }
+
+    function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const rememberMe = document.getElementById('remember').checked;
+      const errorDiv = document.getElementById('login-error');
+      const loaderDiv = document.getElementById('login-loader');
+      const loginBtn = document.getElementById('login-btn');
+
+      // Clear previous errors
+      errorDiv.classList.add('hidden');
+      errorDiv.textContent = '';
+
+      // Validate inputs
+      if (!username || !password) {
+        showLoginError('Please enter both username and password');
+        return;
+      }
+
+      // Show loading
+      loaderDiv.classList.remove('hidden');
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
+
+      // Simulate login delay for better UX
+      setTimeout(() => {
+        // Check credentials
+        if (LOGIN_CREDENTIALS[username] && LOGIN_CREDENTIALS[username] === password) {
+          // Successful login
+          localStorage.setItem('tikTokDownloader_loggedIn', 'true');
+          localStorage.setItem('tikTokDownloader_username', username);
+          
+          if (rememberMe) {
+            localStorage.setItem('tikTokDownloader_rememberMe', 'true');
+          }
+
+          // Hide login overlay and show main app
+          document.getElementById('login-overlay').classList.add('hidden');
+          document.getElementById('main-container').classList.remove('hidden');
+          document.getElementById('logout-btn').classList.remove('hidden');
+          
+          showWelcomeMessage();
+          clearLoginForm();
+        } else {
+          // Failed login
+          showLoginError('Invalid username or password');
+        }
+
+        // Reset loading state
+        loaderDiv.classList.add('hidden');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'LOGIN';
+      }, 1000);
+    }
+
+    function handleLogout() {
+      // Clear login data
+      localStorage.removeItem('tikTokDownloader_loggedIn');
+      localStorage.removeItem('tikTokDownloader_username');
+      
+      // Check if remember me was enabled
+      const rememberMe = localStorage.getItem('tikTokDownloader_rememberMe');
+      if (!rememberMe) {
+        clearLoginForm();
+      }
+
+      // Show login overlay and hide main app
+      document.getElementById('login-overlay').classList.remove('hidden');
+      document.getElementById('main-container').classList.add('hidden');
+      document.getElementById('logout-btn').classList.add('hidden');
+
+      // Remove welcome message if exists
+      const welcomeMsg = document.querySelector('.welcome-message');
+      if (welcomeMsg) {
+        welcomeMsg.remove();
+      }
+    }
+
+    function showLoginError(message) {
+      const errorDiv = document.getElementById('login-error');
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+
+    function clearLoginForm() {
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('login-error').classList.add('hidden');
+    }
+
+    function showWelcomeMessage() {
+      const username = localStorage.getItem('tikTokDownloader_username') || 'User';
+      
+      // Remove existing welcome message
+      const existingMsg = document.querySelector('.welcome-message');
+      if (existingMsg) {
+        existingMsg.remove();
+      }
+
+      // Create welcome message
+      const welcomeMsg = document.createElement('div');
+      welcomeMsg.className = 'welcome-message';
+      welcomeMsg.textContent = `Welcome back, ${username}! 👋`;
+      document.body.appendChild(welcomeMsg);
+
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (welcomeMsg && welcomeMsg.parentNode) {
+          welcomeMsg.style.animation = 'fadeOut 0.5s ease';
+          setTimeout(() => welcomeMsg.remove(), 500);
+        }
+      }, 3000);
+    }
+
+    // Handle Enter key in login form
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !document.getElementById('login-overlay').classList.contains('hidden')) {
+        handleLogin();
+      }
+    });
+
+    // Theme Toggle (existing functionality)
     const themeBtn = document.getElementById("theme-toggle");
     const body = document.body;
 
